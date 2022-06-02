@@ -24,6 +24,10 @@ await doc.useServiceAccountAuth({
   private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
 });
 
+app.get("/", async (req, res) => {
+  return res.sendStatus(200);
+});
+
 app.post("/new-message", async (req, res) => {
   const { message } = req.body;
 

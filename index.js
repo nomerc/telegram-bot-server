@@ -19,10 +19,10 @@ app.use(
 );
 
 const doc = new GoogleSpreadsheet(process.env.GOOGLE_SPREADSHEET_ID);
-// await doc.useServiceAccountAuth({
-//   client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-//   private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-// });
+await doc.useServiceAccountAuth({
+  client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+  private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+});
 
 app.get("/", async (req, res) => {
   return res.sendStatus(200);
@@ -38,16 +38,16 @@ app.post("/new-message", async (req, res) => {
   }
 
   // google spreadsheet
-  // await doc.loadInfo();
-  // const sheet = doc.sheetsByIndex[0];
-  // const rows = await sheet.getRows();
-  // const dataFromSpreadsheet = rows.reduce((obj, row) => {
-  //   if (row.date) {
-  //     const todo = { text: row.text, done: row.done };
-  //     obj[row.date] = obj[row.date] ? [...obj[row.date], todo] : [todo];
-  //   }
-  //   return obj;
-  // }, {});
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0];
+  const rows = await sheet.getRows();
+  const dataFromSpreadsheet = rows.reduce((obj, row) => {
+    if (row.date) {
+      const todo = { text: row.text, done: row.done };
+      obj[row.date] = obj[row.date] ? [...obj[row.date], todo] : [todo];
+    }
+    return obj;
+  }, {});
 
   let responseText = "I have nothing to say.";
   // generate responseText
@@ -60,8 +60,8 @@ app.post("/new-message", async (req, res) => {
       res.send(e);
     }
   } else if (/\d\d\.\d\d/.test(messageText)) {
-    // responseText =
-    // dataFromSpreadsheet[messageText] || "You have nothing to do on this day.";
+    responseText =
+      dataFromSpreadsheet[messageText] || "You have nothing to do on this day.";
   }
 
   // send response
